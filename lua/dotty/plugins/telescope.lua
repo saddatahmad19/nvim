@@ -26,13 +26,58 @@ return {
 		telescope.setup({
 			defaults = {
 				path_display = { "smart" },
+				file_ignore_patterns = { -- Ignore these patterns in searches
+					"node_modules",
+					".git",
+					"target",
+					"vendor",
+					"%.lock",
+					"%.pyc",
+					"%.pyo",
+					"__pycache__",
+				},
 				mappings = {
 					i = {
-						["<C-k>"] = actions.move_selection_previous, -- move to prev result
-						["<C-j>"] = actions.move_selection_next, -- move to next result
+						["<C-k>"] = actions.move_selection_previous,
+						["<C-j>"] = actions.move_selection_next,
 						["<C-q>"] = actions.send_selected_to_qflist + custom_actions.open_trouble_qflist,
 						["<C-t>"] = trouble_telescope.smart_open_with_trouble,
+						["<C-u>"] = false, -- Clear prompt
+						["<C-d>"] = false,
+						["<Esc>"] = actions.close, -- Close with single Esc
 					},
+				},
+				-- Improve preview performance
+				preview = {
+					treesitter = true,
+					filesize_limit = 0.1, -- MB
+					timeout = 250, -- ms
+				},
+				-- Better sorting
+				sorting_strategy = "ascending",
+				layout_config = {
+					horizontal = {
+						prompt_position = "top",
+						preview_width = 0.55,
+					},
+					vertical = {
+						mirror = false,
+					},
+					width = 0.87,
+					height = 0.80,
+					preview_cutoff = 120,
+				},
+			},
+			pickers = {
+				find_files = {
+					hidden = true, -- Show hidden files
+					no_ignore = false, -- Respect .gitignore
+					follow = true, -- Follow symlinks
+				},
+				live_grep = {
+					additional_args = function()
+						return { "--hidden" } -- Search in hidden files
+					end,
 				},
 			},
 		})

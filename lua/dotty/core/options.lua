@@ -1,37 +1,40 @@
 local opt = vim.opt
 
-opt.relativenumber = true
-opt.number = true
+-- 🚀 General Editor Behavior 🚀 --
+opt.number = true -- Show line numbers
+opt.relativenumber = true -- Enable relative line numbers
 
--- tabs & indentation
-opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
-opt.shiftwidth = 2 -- 2 spaces for indent width
-opt.expandtab = true -- expand tab to spaces
-opt.autoindent = true -- copy indent from current line when starting new one
+-- 🚀 Indentation 🚀 --
+opt.tabstop = 4 -- Use 4 spaces for tabs
+opt.shiftwidth = 4 -- Indentation width
+opt.expandtab = true -- Convert tabs to spaces
+opt.autoindent = true -- Auto-indent new lines
 
-opt.wrap = false
+-- 🚀 Search Enhancements 🚀 --
+opt.ignorecase = true -- Case-insensitive search
+opt.smartcase = true -- Case-sensitive if uppercase letters present
+opt.hlsearch = false -- Don't highlight search matches
 
--- search settings
-opt.ignorecase = true -- ignore case when searching
-opt.smartcase = true -- if you include mixed case in your search, assumes you want case-sensitive
+-- 🚀 UI Improvements 🚀 --
+opt.cursorline = true -- Highlight the current line
+opt.termguicolors = true -- Enable true colors
+opt.signcolumn = "yes" -- Always show the sign column
 
-opt.cursorline = true
+-- 🚀 Clipboard 🚀 --
+opt.clipboard = "unnamedplus" -- Use system clipboard
 
--- turn on termguicolors for tokyonight colorscheme to work
--- (have to use iterm2 or any other true color terminal)
-opt.termguicolors = true
-opt.background = "dark" -- colorschemes that can be light or dark will be made dark
-opt.signcolumn = "yes" -- show sign column so that text doesn't shift
+-- 🚀 Splits 🚀 --
+opt.splitright = true -- Vertical split to the right
+opt.splitbelow = true -- Horizontal split below
 
--- backspace
-opt.backspace = "indent,eol,start" -- allow backspace on indent, end of line or insert mode start position
+-- 🚀 Performance 🚀 --
+opt.updatetime = 250 -- Faster update time for plugins
+opt.timeoutlen = 400 -- Faster key sequence timeout
 
--- clipboard
-opt.clipboard:append("unnamedplus") -- use system clipboard as default register
+-- 🚀 File Handling 🚀 --
+opt.swapfile = false -- Disable swap files
+opt.undofile = true -- Persistent undo history
 
--- split windows
-opt.splitright = true -- split vertical window to the right
-opt.splitbelow = true -- split horizontal window to the bottom
-
--- turn off swapfile
-opt.swapfile = false
+-- 🚀 Miscellaneous 🚀 --
+opt.scrolloff = 10 -- Keep cursor centered when scrolling
+opt.sidescrolloff = 8 -- Minimum columns to keep to the left/right
