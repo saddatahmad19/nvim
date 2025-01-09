@@ -22,6 +22,8 @@ return {
 
     local lspkind = require("lspkind")
 
+    local icons = require("dotty.core.icons")
+
     -- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
     require("luasnip.loaders.from_vscode").lazy_load()
 
@@ -56,6 +58,7 @@ return {
         format = lspkind.cmp_format({
           maxwidth = 50,
           ellipsis_char = "...",
+          symbol_map = icons.kinds,
         }),
       },
     })

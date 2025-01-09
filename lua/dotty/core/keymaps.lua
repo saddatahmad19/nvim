@@ -56,6 +56,11 @@ keymap.set("n", "<leader>fs", function()
 end, { desc = "Find String" })
 keymap.set("n", "<leader>fp", "<cmd>Telescope projects<CR>", { desc = "Find Projects" })
 keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<CR>", { desc = "Find TODOs" })
+keymap.set("n", "<leader>fm", "<cmd>Telescope marks<CR>", { desc = "Browse Bookmarks" })
+keymap.set("n", "<leader>fM", "<cmd>Telescope man_pages<CR>", { desc = "Search Man Pages" })
+keymap.set("n", "<leader>fk", "<cmd>Telescope keymaps<CR>", { desc = "Show Keymaps" })
+keymap.set("n", "<leader>fC", "<cmd>Telescope commands<CR>", { desc = "Show Commands" })
+keymap.set("n", "<leader>fS", "<cmd>Telescope git_status<CR>", { desc = "Git Status" })
 
 -- 🚀 Git Integration 🚀 --
 keymap.set("n", "<leader>gs", ":Gitsigns stage_hunk<CR>", { desc = "Git Stage Hunk" })

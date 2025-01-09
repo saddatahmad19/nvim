@@ -8,6 +8,19 @@ return {
 	lazy = false,
 	version = "*",
 	config = function()
+		-- Custom function to open files in vertical split
+		local function open_in_vsplit()
+			-- Get the current line's content
+			local node = require("neorg.core").get_current_node()
+			if not node then return end
+			
+			local file = node:get_filename()
+			if not file then return end
+			
+			-- Create a vertical split on the far right
+			vim.cmd('botright vsplit ' .. vim.fn.fnameescape(file))
+		end
+
 		require("neorg").setup({
 			load = {
 				["core.defaults"] = {}, -- Loads default behaviour
@@ -26,10 +39,11 @@ return {
 					config = {
 						workspaces = {
 							notes = "~/Desktop/Notes/code-notes",
+							inbox = "~/Desktop/Notes/code-notes/inbox",
 							journal = "~/Desktop/Notes/code-notes/journal",
 							projects = "~/Desktop/Notes/code-notes/projects",
 						},
-						default_workspace = "notes",
+						default_workspace = "inbox",
 						index = "index.norg",
 					},
 				},
@@ -56,11 +70,12 @@ return {
 						hook = function(keybinds)
 							-- General note management
 							keybinds.map("norg", "n", "<leader>nn", "<cmd>Neorg workspace notes<CR>")
+							keybinds.map("norg", "n", "<leader>ni", "<cmd>Neorg workspace inbox<CR>")
 							keybinds.map("norg", "n", "<leader>nj", "<cmd>Neorg workspace journal<CR>")
 							keybinds.map("norg", "n", "<leader>np", "<cmd>Neorg workspace projects<CR>")
 							
 							-- Navigation
-							keybinds.map("norg", "n", "<leader>ni", "<cmd>Neorg index<CR>")
+							keybinds.map("norg", "n", "<leader>nx", "<cmd>Neorg index<CR>")
 							keybinds.map("norg", "n", "<leader>nr", "<cmd>Neorg return<CR>")
 							
 							-- TOC and Metadata
@@ -70,6 +85,12 @@ return {
 							-- Export
 							keybinds.map("norg", "n", "<leader>ne", "<cmd>Neorg export to-file<CR>")
 							keybinds.map("norg", "n", "<leader>nE", "<cmd>Neorg export to-markdown<CR>")
+							
+							-- Custom vertical split open
+							keybinds.map("norg", "n", "<leader>nv", open_in_vsplit, { desc = "Open in vertical split" })
+							
+							-- Quick workspace switching
+							keybinds.map_event("norg", "n", "<leader>nw", "core.dirman.switch_workspace", { desc = "Switch workspace" })
 						end,
 					},
 				},

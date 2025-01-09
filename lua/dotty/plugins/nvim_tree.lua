@@ -5,6 +5,8 @@ return {
 	},
 	config = function()
 		-- Configure web-devicons for better looking icons
+		local icons = require("dotty.core.icons")
+
 		require("nvim-web-devicons").setup({
 			override = {
 				default_icon = {
@@ -20,6 +22,61 @@ return {
 					icon = "",
 					color = "#51a0cf",
 					name = "Lua",
+				},
+				["py"] = {
+					icon = "",
+					color = "#ffbc03",
+					name = "Python",
+				},
+				["js"] = {
+					icon = "",
+					color = "#f7df1e",
+					name = "JavaScript",
+				},
+				["ts"] = {
+					icon = "󰛦",
+					color = "#3178c6",
+					name = "TypeScript",
+				},
+				["jsx"] = {
+					icon = "",
+					color = "#61dafb",
+					name = "React",
+				},
+				["tsx"] = {
+					icon = "",
+					color = "#61dafb",
+					name = "ReactTS",
+				},
+				["vue"] = {
+					icon = "󰡄",
+					color = "#42b883",
+					name = "Vue",
+				},
+				["svelte"] = {
+					icon = "",
+					color = "#ff3e00",
+					name = "Svelte",
+				},
+				["html"] = {
+					icon = "",
+					color = "#e34f26",
+					name = "HTML",
+				},
+				["css"] = {
+					icon = "",
+					color = "#1572b6",
+					name = "CSS",
+				},
+				["md"] = {
+					icon = "",
+					color = "#ffffff",
+					name = "Markdown",
+				},
+				["json"] = {
+					icon = "",
+					color = "#cbcb41",
+					name = "JSON",
 				},
 			},
 		})

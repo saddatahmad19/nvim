@@ -19,20 +19,48 @@ return {
         g = { "<cmd>Telescope git_files<cr>", "Git Files" },
         t = { "<cmd>TodoTelescope<cr>", "Find TODOs" },
         s = { function() require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") }) end, "Search String" },
+        m = { "<cmd>Telescope marks<cr>", "Browse Bookmarks" },
+        M = { "<cmd>Telescope man_pages<cr>", "Search Man Pages" },
+        k = { "<cmd>Telescope keymaps<cr>", "Show Keymaps" },
+        C = { "<cmd>Telescope commands<cr>", "Show Commands" },
+        S = { "<cmd>Telescope git_status<cr>", "Git Status" },
+      },
+
+      -- Add command palette feature within the main registration
+      ["<space>"] = { 
+        function()
+          require("which-key").show(" ", {mode = "n", auto = true})
+        end,
+        "Command Palette" 
       },
 
       -- Neorg mappings
       n = {
         name = "Notes",
         n = { "<cmd>Neorg workspace notes<cr>", "Notes Workspace" },
+        i = { "<cmd>Neorg workspace inbox<cr>", "Inbox Workspace" },
         j = { "<cmd>Neorg workspace journal<cr>", "Journal Workspace" },
         p = { "<cmd>Neorg workspace projects<cr>", "Projects Workspace" },
-        i = { "<cmd>Neorg index<cr>", "Index" },
+        x = { "<cmd>Neorg index<cr>", "Index" },
         r = { "<cmd>Neorg return<cr>", "Return" },
         t = { "<cmd>Neorg toc<cr>", "Table of Contents" },
         m = { "<cmd>Neorg inject-metadata<cr>", "Inject Metadata" },
         e = { "<cmd>Neorg export to-file<cr>", "Export to File" },
         E = { "<cmd>Neorg export to-markdown<cr>", "Export to Markdown" },
+        v = { 
+          function() 
+            local neorg = require("neorg.core")
+            local node = neorg.get_current_node()
+            if node then
+              local file = node:get_filename()
+              if file then
+                vim.cmd('botright vsplit ' .. vim.fn.fnameescape(file))
+              end
+            end
+          end, 
+          "Open in Vertical Split" 
+        },
+        w = { "<cmd>Neorg workspace<cr>", "Switch Workspace" },
       },
 
       -- Buffer management

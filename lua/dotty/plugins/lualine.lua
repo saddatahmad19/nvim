@@ -3,69 +3,173 @@ return {
   dependencies = { "nvim-tree/nvim-web-devicons" },
   config = function()
     local lualine = require("lualine")
-    local lazy_status = require("lazy.status") -- to configure lazy pending updates count
+    local lazy_status = require("lazy.status")
 
+    -- Modern color palette with vibrant yet sophisticated colors
     local colors = {
-      blue = "#65D1FF",
-      green = "#3EFFDC",
-      violet = "#FF61EF",
-      yellow = "#FFDA7B",
-      red = "#FF4A4A",
-      fg = "#c3ccdc",
-      bg = "#112638",
-      inactive_bg = "#2c3043",
+      bg = "#1a1b26",
+      fg = "#c0caf5",
+      yellow = "#e0af68",
+      cyan = "#7dcfff",
+      darkblue = "#7aa2f7",
+      green = "#9ece6a",
+      orange = "#ff9e64",
+      violet = "#bb9af7",
+      magenta = "#ff007c",
+      blue = "#2ac3de",
+      red = "#f7768e"
     }
 
-    local my_lualine_theme = {
+    -- Beautiful mode icons
+    local mode_icons = {
+      n = "󰋜",
+      i = "󰏫",
+      v = "󰈈",
+      [''] = "󰈈",
+      V = "󰈈",
+      c = "󰘳",
+      no = "󰋜",
+      s = "󰓡",
+      S = "󰓡",
+      [''] = "󰓡",
+      ic = "󰏫",
+      R = "󰑖",
+      Rv = "󰑖",
+      cv = "󰘳",
+      ce = "󰘳",
+      r = "󰏬",
+      rm = "󰏬",
+      ['r?'] = "󰏬",
+      ['!'] = "󰘳",
+      t = "󰆍",
+    }
+
+    local custom_theme = {
       normal = {
-        a = { bg = colors.blue, fg = colors.bg, gui = "bold" },
-        b = { bg = colors.bg, fg = colors.fg },
-        c = { bg = colors.bg, fg = colors.fg },
+        a = { fg = colors.bg, bg = colors.blue, gui = "bold" },
+        b = { fg = colors.blue, bg = colors.bg },
+        c = { fg = colors.fg, bg = colors.bg }
       },
       insert = {
-        a = { bg = colors.green, fg = colors.bg, gui = "bold" },
-        b = { bg = colors.bg, fg = colors.fg },
-        c = { bg = colors.bg, fg = colors.fg },
+        a = { fg = colors.bg, bg = colors.green, gui = "bold" },
+        b = { fg = colors.green, bg = colors.bg },
+        c = { fg = colors.fg, bg = colors.bg }
       },
       visual = {
-        a = { bg = colors.violet, fg = colors.bg, gui = "bold" },
-        b = { bg = colors.bg, fg = colors.fg },
-        c = { bg = colors.bg, fg = colors.fg },
-      },
-      command = {
-        a = { bg = colors.yellow, fg = colors.bg, gui = "bold" },
-        b = { bg = colors.bg, fg = colors.fg },
-        c = { bg = colors.bg, fg = colors.fg },
+        a = { fg = colors.bg, bg = colors.violet, gui = "bold" },
+        b = { fg = colors.violet, bg = colors.bg },
+        c = { fg = colors.fg, bg = colors.bg }
       },
       replace = {
-        a = { bg = colors.red, fg = colors.bg, gui = "bold" },
-        b = { bg = colors.bg, fg = colors.fg },
-        c = { bg = colors.bg, fg = colors.fg },
+        a = { fg = colors.bg, bg = colors.red, gui = "bold" },
+        b = { fg = colors.red, bg = colors.bg },
+        c = { fg = colors.fg, bg = colors.bg }
+      },
+      command = {
+        a = { fg = colors.bg, bg = colors.yellow, gui = "bold" },
+        b = { fg = colors.yellow, bg = colors.bg },
+        c = { fg = colors.fg, bg = colors.bg }
       },
       inactive = {
-        a = { bg = colors.inactive_bg, fg = colors.semilightgray, gui = "bold" },
-        b = { bg = colors.inactive_bg, fg = colors.semilightgray },
-        c = { bg = colors.inactive_bg, fg = colors.semilightgray },
-      },
+        a = { fg = colors.fg, bg = colors.bg, gui = "bold" },
+        b = { fg = colors.fg, bg = colors.bg },
+        c = { fg = colors.fg, bg = colors.bg }
+      }
     }
 
-    -- configure lualine with modified theme
-    lualine.setup({
+    -- Bubbles config
+    local bubbles_config = {
       options = {
-        theme = my_lualine_theme,
+        theme = custom_theme,
+        component_separators = '|',
+        section_separators = { left = '', right = '' },
+        globalstatus = true,
       },
       sections = {
+        lualine_a = {
+          {
+            function()
+              return mode_icons[vim.fn.mode()]
+            end,
+            padding = { left = 1, right = 1 },
+          },
+          {
+            'mode',
+            padding = { left = 1, right = 2 },
+          },
+        },
+        lualine_b = {
+          {
+            'branch',
+            icon = '',
+            padding = { left = 2, right = 2 },
+          },
+          {
+            'diff',
+            symbols = {
+              added = ' ',
+              modified = ' ',
+              removed = ' ',
+            },
+            padding = { left = 2, right = 1 },
+          },
+        },
+        lualine_c = {
+          {
+            'filename',
+            path = 1,
+            symbols = {
+              modified = '●',
+              readonly = '',
+              unnamed = '[No Name]',
+            }
+          }
+        },
         lualine_x = {
           {
             lazy_status.updates,
             cond = lazy_status.has_updates,
-            color = { fg = "#ff9e64" },
+            color = { fg = colors.orange },
           },
-          { "encoding" },
-          { "fileformat" },
-          { "filetype" },
+          {
+            'diagnostics',
+            symbols = {
+              error = ' ',
+              warn = ' ',
+              info = ' ',
+              hint = ' ',
+            },
+          },
+          { 'filetype', icon_only = true, padding = { left = 1, right = 1 } },
+          { 'encoding', padding = { left = 1, right = 1 } },
+          {
+            'fileformat',
+            symbols = {
+              unix = '󰣇', -- e712
+              dos = '󰨡',  -- e20f
+              mac = '',  -- e711
+            },
+            padding = { left = 1, right = 2 },
+          },
+        },
+        lualine_y = {
+          { 'progress', padding = { left = 1, right = 1 } },
+        },
+        lualine_z = {
+          { 'location', padding = { left = 1, right = 1 } },
         },
       },
-    })
+      inactive_sections = {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = { 'filename' },
+        lualine_x = { 'location' },
+        lualine_y = {},
+        lualine_z = {},
+      },
+      extensions = { 'nvim-tree' },
+    }
+
+    lualine.setup(bubbles_config)
   end,
 }
