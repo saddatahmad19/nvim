@@ -5,15 +5,12 @@ vim.g.maplocalleader = " "
 local keymap = vim.keymap -- Alias for easier keybinding
 
 -- 🚀 Better File Navigation 🚀 --
-keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle File Explorer" })
+keymap.set("n", "<leader>e", ":Ex<CR>", { desc = "Toggle File Explorer" })
 keymap.set("n", "<leader>pv", ":Ex<CR>", { desc = "File Explorer (Netrw Fallback)" })
 keymap.set("n", "<leader>ps", ":w!<CR>", { desc = "Save File" })
 keymap.set("n", "<leader>w", ":w!<CR>", { desc = "Save File" })
 keymap.set("n", "<leader>q", ":q!<CR>", { desc = "Close File" })
 keymap.set("n", "<leader>x", ":x!<CR>", { desc = "Save and Exit" })
-keymap.set("n", "<leader>bd", ":bd<CR>", { desc = "Close Current Buffer" })
-keymap.set("n", "<leader>bn", ":bnext<CR>", { desc = "Next Buffer" })
-keymap.set("n", "<leader>bp", ":bprev<CR>", { desc = "Previous Buffer" })
 
 -- 🚀 Editing Enhancements 🚀 --
 keymap.set("i", "jk", "<ESC>", { desc = "Exit Insert Mode Quickly" })
@@ -36,11 +33,14 @@ keymap.set("n", "<leader>se", "<C-w>=", { desc = "Equalize Window Sizes" })
 keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close Current Split" })
 
 -- 🚀 Tab Management 🚀 --
-keymap.set("n", "<leader>tt", "<cmd>tabnew<CR>", { desc = "Open New Tab" })
-keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close Current Tab" })
-keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Next Tab" })
-keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Previous Tab" })
-keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open Current Buffer in New Tab" })
+-- keymap.set("n", "<leader>tt", "<cmd>enew<CR><cmd>BufferLineCycleNext<CR>", { desc = "Open New Buffer" })
+-- keymap.set("n", "<leader>txx", "<cmd>:wq<CR>", { desc = "Close Current Tab" })
+-- keymap.set("n", "<leader>txo", "<cmd>BufferLineCloseOthers<CR>", { desc = "Close Current Buffer" })
+-- keymap.set("n", "<leader>tl", "<cmd>BufferLineCycleNext<CR>", { desc = "Next Tab" })
+-- keymap.set("n", "<leader>th", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous Tab" })
+-- keymap.set("n", "<leader>tc", "<cmd>BufferLinePickClose<CR>", { desc = "Pick Buffer to Close" })
+-- keymap.set("n", "<leader>tp", "<cmd>BufferLinePick<CR>", { desc = "Pick Buffer" })
+-- keymap.set("n", "<leader>ts", "<cmd>BufferLineSortByDirectory<CR>", { desc = "Sort Buffers" })
 
 -- 🚀 Telescope (Fuzzy Finder) 🚀 --
 keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Find Files" })
@@ -77,7 +77,3 @@ keymap.set("n", "<leader>rn", ":lua vim.lsp.buf.rename()<CR>", { desc = "Rename 
 -- 🚀 Debugging 🚀 --
 keymap.set("n", "<leader>db", ":lua require'dap'.toggle_breakpoint()<CR>", { desc = "Toggle Breakpoint" })
 keymap.set("n", "<leader>dc", ":lua require'dap'.continue()<CR>", { desc = "Continue Debugging" })
-
--- 🚀 NvimTree 🚀 --
-keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle File Explorer" })
-keymap.set("n", "<leader>fe", ":NvimTreeFindFile<CR>", { desc = "Find Current File" })

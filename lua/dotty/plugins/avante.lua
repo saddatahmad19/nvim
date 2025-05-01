@@ -2,7 +2,7 @@ return {
 	"yetone/avante.nvim",
 	event = "VeryLazy",
 	lazy = false,
-	version = false, -- set this if you want to always pull the latest change
+	version = true, -- set this if you want to always pull the latest change
 	opts = {
 		-- add any opts here
 	},
@@ -22,7 +22,7 @@ return {
 			"HakonHarnes/img-clip.nvim",
 			event = "VeryLazy",
 			opts = {
-				-- recommended settings
+
 				default = {
 					embed_image_as_base64 = false,
 					prompt_for_file_name = false,

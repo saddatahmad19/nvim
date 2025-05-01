@@ -84,9 +84,6 @@ return {
         r = { vim.lsp.buf.rename, "Rename" },
         s = { ":LspRestart<cr>", "Restart LSP" },
       },
-
-      -- NvimTree mappings
-      e = { "<cmd>NvimTreeToggle<cr>", "Toggle File Explorer" },
     }, { prefix = "<leader>" })
 
     -- Register non-leader keymaps
