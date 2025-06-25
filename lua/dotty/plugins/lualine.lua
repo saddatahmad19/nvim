@@ -7,7 +7,7 @@ return {
 
     -- Modern color palette with vibrant yet sophisticated colors
     local colors = {
-      bg = "#1a1b26",
+      bg = "none",
       fg = "#c0caf5",
       yellow = "#e0af68",
       cyan = "#7dcfff",
@@ -80,7 +80,7 @@ return {
     -- Bubbles config
     local bubbles_config = {
       options = {
-        theme = custom_theme,
+        theme = 'auto',
         component_separators = '|',
         section_separators = { left = '', right = '' },
         globalstatus = true,

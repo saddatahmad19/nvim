@@ -63,7 +63,7 @@ return {
         w = { "<cmd>Neorg workspace<cr>", "Switch Workspace" },
       },
 
-      -- Buffer management
+      -- Buffer management (updated for bufferline)
       b = {
         name = "Buffers",
         p = { "<cmd>BufferLineTogglePin<cr>", "Toggle pin" },
@@ -73,6 +73,10 @@ return {
         ["3"] = { "<cmd>BufferLineGoToBuffer 3<cr>", "Go to buffer 3" },
         ["4"] = { "<cmd>BufferLineGoToBuffer 4<cr>", "Go to buffer 4" },
         ["5"] = { "<cmd>BufferLineGoToBuffer 5<cr>", "Go to buffer 5" },
+        c = { "<cmd>BufferLineClose<cr>", "Close buffer" },
+        o = { "<cmd>BufferLineCloseOthers<cr>", "Close other buffers" },
+        l = { "<cmd>BufferLineCloseLeft<cr>", "Close buffers to the left" },
+        r = { "<cmd>BufferLineCloseRight<cr>", "Close buffers to the right" },
       },
 
       -- LSP mappings
@@ -83,6 +87,34 @@ return {
         D = { "<cmd>Telescope diagnostics bufnr=0<cr>", "Buffer Diagnostics" },
         r = { vim.lsp.buf.rename, "Rename" },
         s = { ":LspRestart<cr>", "Restart LSP" },
+      },
+
+      -- Git mappings (enhanced)
+      g = {
+        name = "Git",
+        s = { "<cmd>Git<cr>", "Git Status" },
+        d = { "<cmd>DiffviewOpen<cr>", "Open Diffview" },
+        c = { "<cmd>DiffviewClose<cr>", "Close Diffview" },
+        h = { "<cmd>DiffviewFileHistory<cr>", "File History" },
+        l = { "<cmd>DiffviewLog<cr>", "Git Log" },
+        f = { "<cmd>DiffviewFocusFiles<cr>", "Focus Files" },
+        t = { "<cmd>DiffviewToggleFiles<cr>", "Toggle Files" },
+      },
+
+      -- Sessions
+      s = {
+        name = "Sessions",
+        s = { function() require("persistence").load() end, "Restore Session" },
+        l = { function() require("persistence").load({ last = true }) end, "Restore Last Session" },
+        d = { function() require("persistence").stop() end, "Don't Save Session" },
+      },
+
+      -- AI/Copilot
+      a = {
+        name = "AI/Copilot",
+        s = { "<cmd>Copilot status<cr>", "Copilot Status" },
+        p = { "<cmd>Copilot panel<cr>", "Copilot Panel" },
+        t = { "<cmd>Copilot toggle<cr>", "Toggle Copilot" },
       },
     }, { prefix = "<leader>" })
 
@@ -103,7 +135,7 @@ return {
       ["]d"] = { vim.diagnostic.goto_next, "Next Diagnostic" },
       ["[d"] = { vim.diagnostic.goto_prev, "Previous Diagnostic" },
 
-      -- Buffer navigation
+      -- Buffer navigation (updated for bufferline)
       ["]b"] = { "<cmd>BufferLineCycleNext<cr>", "Next Buffer" },
       ["[b"] = { "<cmd>BufferLineCyclePrev<cr>", "Previous Buffer" },
       ["<S-h>"] = { "<cmd>BufferLineCyclePrev<cr>", "Previous Buffer" },

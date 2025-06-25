@@ -2,7 +2,7 @@ return {
 	"yetone/avante.nvim",
 	event = "VeryLazy",
 	lazy = false,
-	version = true, -- set this if you want to always pull the latest change
+	version = false, -- always pull the latest commit (fixes the error)
 	opts = {
 		-- add any opts here
 	},

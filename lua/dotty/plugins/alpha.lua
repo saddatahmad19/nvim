@@ -37,7 +37,7 @@ return {
 
     -- Footer with plugin stats
     dashboard.section.footer.val = get_plugin_count()
-    dashboard.section.footer.opts.hl = "AlphaFooter"
+    dashboard.section.footer.opts.hl = "Comment"
 
     -- Set menu (using only keymaps from PR diff)
     dashboard.section.buttons.val = {
@@ -56,6 +56,14 @@ return {
 
     -- Set options
     dashboard.config.opts.noautocmd = true
+
+    -- Set highlight groups for transparency
+    vim.cmd([[
+      highlight default AlphaHeader guifg=#7aa2f7 guibg=NONE
+      highlight default AlphaButtons guifg=#c0caf5 guibg=NONE
+      highlight default AlphaFooter guifg=#565f89 guibg=NONE
+      highlight default Dashboard guibg=NONE
+    ]])
 
     -- Send config to alpha
     alpha.setup(dashboard.opts)
