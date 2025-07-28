@@ -1,3 +1,4 @@
+-- lua/dotty/plugins/nvim_cmp.lua
 return {
   "hrsh7th/nvim-cmp",
   event = "InsertEnter",
@@ -8,8 +9,8 @@ return {
       "L3MON4D3/LuaSnip",
       -- follow latest release.
       version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-      -- install jsregexp (optional!).
-      build = "make install_jsregexp",
+      -- install jsregexp (optional!), conditionally.
+      build = require("dotty.core.os").is_windows() and nil or "make install_jsregexp",
     },
     "saadparwaiz1/cmp_luasnip", -- for autocompletion
     "rafamadriz/friendly-snippets", -- useful snippets
@@ -47,7 +48,7 @@ return {
       }),
       -- sources for autocompletion
       sources = cmp.config.sources({
-        { name = "nvim_lsp"},
+        { name = "nvim_lsp" },
         { name = "luasnip" }, -- snippets
         { name = "buffer" }, -- text within current buffer
         { name = "path" }, -- file system paths

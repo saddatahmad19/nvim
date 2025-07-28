@@ -1,7 +1,18 @@
+-- lua/dotty/plugins/treesitter.lua
 return {
   "nvim-treesitter/nvim-treesitter",
   event = { "BufReadPre", "BufNewFile" },
-  build = ":TSUpdate",
+  -- Conditionally run the build step only on non-Windows systems.
+  build = function()
+    if not require("dotty.core.os").is_windows() then
+      vim.cmd.TSUpdate()
+    else
+      -- On Windows, :TSUpdate can fail if build tools are not set up.
+      -- You may need to install the MSVC C++ build tools for Visual Studio.
+      -- See: https://github.com/nvim-treesitter/nvim-treesitter/wiki/Windows-Installation-Guide
+      print("Skipping automatic :TSUpdate on Windows. Run it manually if you have build tools installed.")
+    end
+  end,
   dependencies = {
     "windwp/nvim-ts-autotag",
   },
