@@ -5,14 +5,13 @@ return {
 		"hrsh7th/cmp-nvim-lsp",
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 		{ "folke/neodev.nvim", opts = {} },
+		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
 	},
 	config = function()
 		-- import lspconfig plugin
 		local lspconfig = require("lspconfig")
 		local util = require("lspconfig/util")
-		-- import mason_lspconfig plugin
-		local mason_lspconfig = require("mason-lspconfig")
-
 		-- import cmp-nvim-lsp plugin
 		local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
@@ -84,128 +83,88 @@ return {
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 		end
 
-		mason_lspconfig.setup_handlers({
-			-- default handler for installed servers
-			function(server_name)
-				lspconfig[server_name].setup({
+		-- Configure LSP servers manually
+		-- This approach works regardless of setup_handlers availability
+		
+		-- Helper function to safely setup a server
+		local function setup_if_available(server_name, config)
+			if lspconfig[server_name] then
+				lspconfig[server_name].setup(vim.tbl_deep_extend("force", {
 					capabilities = capabilities,
-				})
-			end,
-			["svelte"] = function()
-				-- configure svelte server
-				lspconfig["svelte"].setup({
-					capabilities = capabilities,
-					on_attach = function(client, bufnr)
-						vim.api.nvim_create_autocmd("BufWritePost", {
-							pattern = { "*.js", "*.ts" },
-							callback = function(ctx)
-								-- Here use ctx.match instead of ctx.file
-								client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
-							end,
-						})
+				}, config or {}))
+			end
+		end
+
+		-- Configure specific servers with custom settings
+		-- Lua Language Server
+		setup_if_available("lua_ls", {
+			settings = {
+				Lua = {
+					diagnostics = {
+						globals = { "vim" },
+					},
+					completion = {
+						callSnippet = "Replace",
+					},
+				},
+			},
+		})
+
+		-- Svelte Language Server
+		setup_if_available("svelte", {
+			on_attach = function(client, bufnr)
+				vim.api.nvim_create_autocmd("BufWritePost", {
+					pattern = { "*.js", "*.ts" },
+					callback = function(ctx)
+						client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
 					end,
 				})
 			end,
-			["gopls"] = function()
-				lspconfig["gopls"].setup({
-					capabilities = capabilities,
-					cmd = { "gopls" },
-					filetypes = { "go", "gomod", "gowork", "gotmpl" },
-					root_dir = util.root_pattern("go.work", "go.mod", ".git"),
-				})
-			end,
-			["pylsp"] = function()
-				local pylsp_binary = vim.fn.stdpath("data") .. "/mason/bin/pylsp"
-				lspconfig["pylsp"].setup({
-					capabilities = capabilities,
-					cmd = { pylsp_binary },
-					filetypes = { "python" },
-					settings = {
-						pylsp = {
-							plugins = {
-								pycodestyle = {
-									enabled = true,
-									maxLineLength = 100,
-								},
-								mccabe = {
-									enabled = true,
-								},
-								pyflakes = {
-									enabled = true,
-								},
-								flake8 = {
-									enabled = true,
-									maxLineLength = 100,
-								},
-								pylint = {
-									enabled = true,
-									executable = vim.fn.stdpath("data") .. "/mason/bin/pylint",
-								},
-							},
-						},
-					},
-				})
-			end,
-			["pyright"] = function()
-				local pyright_binary = vim.fn.stdpath("data") .. "/mason/bin/pyright-langserver"
-				lspconfig["pyright"].setup({
-					capabilities = capabilities,
-					cmd = { pyright_binary, "--stdio" },
-					filetypes = { "python" },
-					settings = {
-						python = {
-							analysis = {
-								typeCheckingMode = "basic",
-								diagnosticMode = "workspace",
-								inlayHints = {
-									variableTypes = true,
-									functionReturnTypes = true,
-								},
-							},
-						},
-					},
-				})
-			end,
-			["graphql"] = function()
-				-- configure graphql language server
-				lspconfig["graphql"].setup({
-					capabilities = capabilities,
-					filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-				})
-			end,
-			["emmet_ls"] = function()
-				-- configure emmet language server
-				lspconfig["emmet_ls"].setup({
-					capabilities = capabilities,
-					filetypes = {
-						"html",
-						"typescriptreact",
-						"javascriptreact",
-						"css",
-						"sass",
-						"scss",
-						"less",
-						"svelte",
-					},
-				})
-			end,
-			["lua_ls"] = function()
-				-- configure lua server (with special settings)
-				lspconfig["lua_ls"].setup({
-					capabilities = capabilities,
-					settings = {
-						Lua = {
-							-- make the language server recognize "vim" global
-							diagnostics = {
-								globals = { "vim" },
-							},
-							completion = {
-								callSnippet = "Replace",
-							},
-						},
-					},
-				})
-			end,
 		})
+
+		-- GraphQL Language Server
+		setup_if_available("graphql", {
+			filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
+		})
+
+		-- Emmet Language Server
+		setup_if_available("emmet_ls", {
+			filetypes = {
+				"html",
+				"typescriptreact",
+				"javascriptreact",
+				"css",
+				"sass",
+				"scss",
+				"less",
+				"svelte",
+			},
+		})
+
+		-- Try to use mason-lspconfig's setup_handlers if available (for auto-configuring other servers)
+		-- Otherwise, servers will need to be configured manually as needed
+		vim.schedule(function()
+			local mason_lspconfig_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
+			if mason_lspconfig_ok and mason_lspconfig and mason_lspconfig.setup_handlers then
+				-- Use setup_handlers for auto-configuring other installed servers
+				mason_lspconfig.setup_handlers({
+					-- Default handler for any installed server
+					function(server_name)
+						-- Skip servers we've already configured
+						local configured_servers = {
+							lua_ls = true,
+							svelte = true,
+							graphql = true,
+							emmet_ls = true,
+						}
+						if not configured_servers[server_name] and lspconfig[server_name] then
+							lspconfig[server_name].setup({
+								capabilities = capabilities,
+							})
+						end
+					end,
+				})
+			end
+		end)
 	end,
 }

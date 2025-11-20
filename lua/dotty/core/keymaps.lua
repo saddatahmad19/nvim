@@ -42,37 +42,11 @@ keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close Current Split" }
 -- keymap.set("n", "<leader>tp", "<cmd>BufferLinePick<CR>", { desc = "Pick Buffer" })
 -- keymap.set("n", "<leader>ts", "<cmd>BufferLineSortByDirectory<CR>", { desc = "Sort Buffers" })
 
--- 🚀 Telescope (Fuzzy Finder) 🚀 --
-keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Find Files" })
-keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { desc = "Search Text" })
-keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "List Open Buffers" })
-keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Find Help" })
-keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<CR>", { desc = "Recent Files" })
-keymap.set("n", "<leader>fc", "<cmd>Telescope current_buffer_fuzzy_find<CR>", { desc = "Find in Current Buffer" })
-keymap.set("n", "<leader>fw", "<cmd>Telescope grep_string<CR>", { desc = "Find Word Under Cursor" })
-keymap.set("n", "<leader>fd", "<cmd>Telescope diagnostics<CR>", { desc = "Find Diagnostics" })
-keymap.set("n", "<leader>fs", function()
-    require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") })
-end, { desc = "Find String" })
-keymap.set("n", "<leader>fp", "<cmd>Telescope projects<CR>", { desc = "Find Projects" })
-keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<CR>", { desc = "Find TODOs" })
-keymap.set("n", "<leader>fm", "<cmd>Telescope marks<CR>", { desc = "Browse Bookmarks" })
-keymap.set("n", "<leader>fM", "<cmd>Telescope man_pages<CR>", { desc = "Search Man Pages" })
-keymap.set("n", "<leader>fk", "<cmd>Telescope keymaps<CR>", { desc = "Show Keymaps" })
-keymap.set("n", "<leader>fC", "<cmd>Telescope commands<CR>", { desc = "Show Commands" })
-keymap.set("n", "<leader>fS", "<cmd>Telescope git_status<CR>", { desc = "Git Status" })
+-- 🚀 Telescope, Git, and LSP keymaps are handled by which_key.lua and plugin configs 🚀 --
+-- Removed duplicates to avoid conflicts
 
--- 🚀 Git Integration 🚀 --
-keymap.set("n", "<leader>gs", ":Gitsigns stage_hunk<CR>", { desc = "Git Stage Hunk" })
-keymap.set("n", "<leader>gr", ":Gitsigns reset_hunk<CR>", { desc = "Git Reset Hunk" })
-keymap.set("n", "<leader>gp", ":Gitsigns preview_hunk<CR>", { desc = "Git Preview Hunk" })
-
--- 🚀 LSP (Language Server Protocol) 🚀 --
-keymap.set("n", "gd", ":lua vim.lsp.buf.definition()<CR>", { desc = "Go to Definition" })
-keymap.set("n", "gr", ":lua vim.lsp.buf.references()<CR>", { desc = "Find References" })
-keymap.set("n", "K", ":lua vim.lsp.buf.hover()<CR>", { desc = "Hover Documentation" })
-keymap.set("n", "gi", ":lua vim.lsp.buf.implementation()<CR>", { desc = "Go to Implementation" })
-keymap.set("n", "<leader>rn", ":lua vim.lsp.buf.rename()<CR>", { desc = "Rename Symbol" })
+-- 🚀 Plugin Management 🚀 --
+keymap.set("n", "<leader>fu", "<cmd>Lazy update<cr>", { desc = "Update Plugins (Lazy)" })
 
 -- 🚀 Debugging 🚀 --
 keymap.set("n", "<leader>db", ":lua require'dap'.toggle_breakpoint()<CR>", { desc = "Toggle Breakpoint" })

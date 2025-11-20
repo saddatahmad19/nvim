@@ -1,201 +1,114 @@
 return {
-  "folke/which-key.nvim",
-  event = "VeryLazy",
-  init = function()
-    vim.o.timeout = true
-    vim.o.timeoutlen = 500
-  end,
-  config = function()
-    local wk = require("which-key")
+	"folke/which-key.nvim",
+	event = "VeryLazy",
+	dependencies = {
+		{ "echasnovski/mini.icons", version = false },
+	},
+	init = function()
+		vim.o.timeout = true
+		vim.o.timeoutlen = 500
+	end,
+	config = function()
+		local wk = require("which-key")
 
-    -- Register all keymaps with leader prefix
-    wk.register({
-      -- Telescope mappings
-      f = {
-        name = "Find/Files",
-        f = { "<cmd>Telescope find_files<cr>", "Find Files" },
-        r = { "<cmd>Telescope oldfiles<cr>", "Recent Files" },
-        c = { "<cmd>Telescope grep_string<cr>", "Find Word Under Cursor" },
-        g = { "<cmd>Telescope git_files<cr>", "Git Files" },
-        t = { "<cmd>TodoTelescope<cr>", "Find TODOs" },
-        s = { function() require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") }) end, "Search String" },
-        m = { "<cmd>Telescope marks<cr>", "Browse Bookmarks" },
-        M = { "<cmd>Telescope man_pages<cr>", "Search Man Pages" },
-        k = { "<cmd>Telescope keymaps<cr>", "Show Keymaps" },
-        C = { "<cmd>Telescope commands<cr>", "Show Commands" },
-        S = { "<cmd>Telescope git_status<cr>", "Git Status" },
-      },
+		local leader_mappings = {
+			{ "<leader><space>", function() wk.show(" ", { mode = "n", auto = true }) end, desc = "Command Palette" },
 
-      -- Add command palette feature within the main registration
-      ["<space>"] = { 
-        function()
-          require("which-key").show(" ", {mode = "n", auto = true})
-        end,
-        "Command Palette" 
-      },
+			-- Telescope mappings
+			{ "<leader>f", group = "Find/Files" },
+			{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
+			{ "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent Files" },
+			{ "<leader>fc", "<cmd>Telescope grep_string<cr>", desc = "Find Word Under Cursor" },
+			{ "<leader>fg", "<cmd>Telescope git_files<cr>", desc = "Git Files" },
+			{ "<leader>ft", "<cmd>TodoTelescope<cr>", desc = "Find TODOs" },
+			{
+				"<leader>fs",
+				function()
+					require("telescope.builtin").grep_string({ search = vim.fn.input("Grep > ") })
+				end,
+				desc = "Search String",
+			},
+			{ "<leader>fm", "<cmd>Telescope marks<cr>", desc = "Browse Bookmarks" },
+			{ "<leader>fM", "<cmd>Telescope man_pages<cr>", desc = "Search Man Pages" },
+			{ "<leader>fk", "<cmd>Telescope keymaps<cr>", desc = "Show Keymaps" },
+			{ "<leader>fC", "<cmd>Telescope commands<cr>", desc = "Show Commands" },
+			{ "<leader>fS", "<cmd>Telescope git_status<cr>", desc = "Git Status" },
+			{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "List Open Buffers" },
+			{ "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Find Help" },
+			{ "<leader>fd", "<cmd>Telescope diagnostics<cr>", desc = "Find Diagnostics" },
+			{ "<leader>fp", "<cmd>Telescope projects<cr>", desc = "Find Projects" },
+			{ "<leader>fw", "<cmd>Telescope grep_string<cr>", desc = "Find Word Under Cursor" },
 
-      -- Neorg mappings
-      n = {
-        name = "Notes",
-        n = { "<cmd>Neorg workspace notes<cr>", "Notes Workspace" },
-        i = { "<cmd>Neorg workspace inbox<cr>", "Inbox Workspace" },
-        j = { "<cmd>Neorg workspace journal<cr>", "Journal Workspace" },
-        p = { "<cmd>Neorg workspace projects<cr>", "Projects Workspace" },
-        x = { "<cmd>Neorg index<cr>", "Index" },
-        r = { "<cmd>Neorg return<cr>", "Return" },
-        t = { "<cmd>Neorg toc<cr>", "Table of Contents" },
-        m = { "<cmd>Neorg inject-metadata<cr>", "Inject Metadata" },
-        e = { "<cmd>Neorg export to-file<cr>", "Export to File" },
-        E = { "<cmd>Neorg export to-markdown<cr>", "Export to Markdown" },
-        v = { 
-          function() 
-            local neorg = require("neorg.core")
-            local node = neorg.get_current_node()
-            if node then
-              local file = node:get_filename()
-              if file then
-                vim.cmd('botright vsplit ' .. vim.fn.fnameescape(file))
-              end
-            end
-          end, 
-          "Open in Vertical Split" 
-        },
-        w = { "<cmd>Neorg workspace<cr>", "Switch Workspace" },
-      },
+			-- Buffer management (barbar.nvim)
+			{ "<leader>b", group = "Buffers" },
+			{ "<leader>b1", "<cmd>BufferGoto 1<cr>", desc = "Go to buffer 1" },
+			{ "<leader>b2", "<cmd>BufferGoto 2<cr>", desc = "Go to buffer 2" },
+			{ "<leader>b3", "<cmd>BufferGoto 3<cr>", desc = "Go to buffer 3" },
+			{ "<leader>b4", "<cmd>BufferGoto 4<cr>", desc = "Go to buffer 4" },
+			{ "<leader>b5", "<cmd>BufferGoto 5<cr>", desc = "Go to buffer 5" },
+			{ "<leader>bc", "<cmd>BufferClose<cr>", desc = "Close buffer" },
+			{ "<leader>bo", "<cmd>BufferCloseAllButCurrent<cr>", desc = "Close other buffers" },
+			{ "<leader>bp", "<cmd>BufferPick<cr>", desc = "Pick buffer" },
 
-      -- Buffer management (updated for bufferline)
-      b = {
-        name = "Buffers",
-        p = { "<cmd>BufferLineTogglePin<cr>", "Toggle pin" },
-        P = { "<cmd>BufferLineGroupClose ungrouped<cr>", "Delete non-pinned buffers" },
-        ["1"] = { "<cmd>BufferLineGoToBuffer 1<cr>", "Go to buffer 1" },
-        ["2"] = { "<cmd>BufferLineGoToBuffer 2<cr>", "Go to buffer 2" },
-        ["3"] = { "<cmd>BufferLineGoToBuffer 3<cr>", "Go to buffer 3" },
-        ["4"] = { "<cmd>BufferLineGoToBuffer 4<cr>", "Go to buffer 4" },
-        ["5"] = { "<cmd>BufferLineGoToBuffer 5<cr>", "Go to buffer 5" },
-        c = { "<cmd>BufferLineClose<cr>", "Close buffer" },
-        o = { "<cmd>BufferLineCloseOthers<cr>", "Close other buffers" },
-        l = { "<cmd>BufferLineCloseLeft<cr>", "Close buffers to the left" },
-        r = { "<cmd>BufferLineCloseRight<cr>", "Close buffers to the right" },
-      },
+			-- LSP actions
+			{ "<leader>c", group = "Code" },
+			{ "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action" },
+			{ "<leader>cd", vim.diagnostic.open_float, desc = "Line Diagnostics" },
+			{ "<leader>cD", "<cmd>Telescope diagnostics bufnr=0<cr>", desc = "Buffer Diagnostics" },
+			{ "<leader>cr", vim.lsp.buf.rename, desc = "Rename" },
+			{ "<leader>cs", "<cmd>LspRestart<cr>", desc = "Restart LSP" },
 
-      -- LSP mappings
-      c = {
-        name = "Code",
-        a = { vim.lsp.buf.code_action, "Code Action" },
-        d = { vim.diagnostic.open_float, "Line Diagnostics" },
-        D = { "<cmd>Telescope diagnostics bufnr=0<cr>", "Buffer Diagnostics" },
-        r = { vim.lsp.buf.rename, "Rename" },
-        s = { ":LspRestart<cr>", "Restart LSP" },
-      },
+			-- Git / Diffview
+			{ "<leader>g", group = "Git" },
+			{ "<leader>gs", "<cmd>Git<cr>", desc = "Git Status" },
+			{ "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Open Diffview" },
+			{ "<leader>gc", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
+			{ "<leader>gh", "<cmd>DiffviewFileHistory<cr>", desc = "File History" },
+			{ "<leader>gl", "<cmd>DiffviewLog<cr>", desc = "Git Log" },
+			{ "<leader>gf", "<cmd>DiffviewFocusFiles<cr>", desc = "Focus Files" },
+			{ "<leader>gt", "<cmd>DiffviewToggleFiles<cr>", desc = "Toggle Files" },
 
-      -- Git mappings (enhanced)
-      g = {
-        name = "Git",
-        s = { "<cmd>Git<cr>", "Git Status" },
-        d = { "<cmd>DiffviewOpen<cr>", "Open Diffview" },
-        c = { "<cmd>DiffviewClose<cr>", "Close Diffview" },
-        h = { "<cmd>DiffviewFileHistory<cr>", "File History" },
-        l = { "<cmd>DiffviewLog<cr>", "Git Log" },
-        f = { "<cmd>DiffviewFocusFiles<cr>", "Focus Files" },
-        t = { "<cmd>DiffviewToggleFiles<cr>", "Toggle Files" },
-      },
+			-- Sessions (persistence.nvim)
+			{ "<leader>q", group = "Sessions" },
+			{
+				"<leader>qs",
+				function() require("persistence").load() end,
+				desc = "Restore Session",
+			},
+			{
+				"<leader>ql",
+				function() require("persistence").load({ last = true }) end,
+				desc = "Restore Last Session",
+			},
+			{
+				"<leader>qd",
+				function() require("persistence").stop() end,
+				desc = "Don't Save Session",
+			},
+		}
 
-      -- Sessions
-      s = {
-        name = "Sessions",
-        s = { function() require("persistence").load() end, "Restore Session" },
-        l = { function() require("persistence").load({ last = true }) end, "Restore Last Session" },
-        d = { function() require("persistence").stop() end, "Don't Save Session" },
-      },
+		wk.add(leader_mappings)
 
-      -- AI/Copilot
-      a = {
-        name = "AI/Copilot",
-        s = { "<cmd>Copilot status<cr>", "Copilot Status" },
-        p = { "<cmd>Copilot panel<cr>", "Copilot Panel" },
-        t = { "<cmd>Copilot toggle<cr>", "Toggle Copilot" },
-      },
-    }, { prefix = "<leader>" })
+		local general_mappings = {
+			{ "g", group = "LSP Navigation" },
+			{ "gd", "<cmd>Telescope lsp_definitions<cr>", desc = "Go to Definition" },
+			{ "gD", vim.lsp.buf.declaration, desc = "Go to Declaration" },
+			{ "gi", "<cmd>Telescope lsp_implementations<cr>", desc = "Go to Implementation" },
+			{ "gr", "<cmd>Telescope lsp_references<cr>", desc = "Find References" },
+			{ "gt", "<cmd>Telescope lsp_type_definitions<cr>", desc = "Type Definition" },
+			{ "K", vim.lsp.buf.hover, desc = "Show Documentation" },
 
-    -- Register non-leader keymaps
-    wk.register({
-      -- LSP mappings
-      g = {
-        name = "LSP Navigation",
-        d = { "<cmd>Telescope lsp_definitions<cr>", "Go to Definition" },
-        D = { vim.lsp.buf.declaration, "Go to Declaration" },
-        i = { "<cmd>Telescope lsp_implementations<cr>", "Go to Implementation" },
-        r = { "<cmd>Telescope lsp_references<cr>", "Find References" },
-        t = { "<cmd>Telescope lsp_type_definitions<cr>", "Type Definition" },
-      },
-      K = { vim.lsp.buf.hover, "Show Documentation" },
+			-- Diagnostic navigation
+			{ "]d", vim.diagnostic.goto_next, desc = "Next Diagnostic" },
+			{ "[d", vim.diagnostic.goto_prev, desc = "Previous Diagnostic" },
 
-      -- Diagnostic navigation
-      ["]d"] = { vim.diagnostic.goto_next, "Next Diagnostic" },
-      ["[d"] = { vim.diagnostic.goto_prev, "Previous Diagnostic" },
+			-- Buffer navigation (barbar.nvim)
+			{ "]b", "<cmd>BufferNext<cr>", desc = "Next Buffer" },
+			{ "[b", "<cmd>BufferPrevious<cr>", desc = "Previous Buffer" },
+			{ "<S-l>", "<cmd>BufferNext<cr>", desc = "Next Buffer" },
+			{ "<S-h>", "<cmd>BufferPrevious<cr>", desc = "Previous Buffer" },
+		}
 
-      -- Buffer navigation (updated for bufferline)
-      ["]b"] = { "<cmd>BufferLineCycleNext<cr>", "Next Buffer" },
-      ["[b"] = { "<cmd>BufferLineCyclePrev<cr>", "Previous Buffer" },
-      ["<S-h>"] = { "<cmd>BufferLineCyclePrev<cr>", "Previous Buffer" },
-      ["<S-l>"] = { "<cmd>BufferLineCycleNext<cr>", "Next Buffer" },
-    })
-
-    -- Register NvimTree buffer-specific mappings
-    vim.api.nvim_create_autocmd("FileType", {
-      pattern = "NvimTree",
-      callback = function(ev)
-        wk.register({
-          ["<C-]>"] = { "CD" },
-          ["<C-e>"] = { "Open in Place" },
-          ["<C-k>"] = { "Info" },
-          ["<C-r>"] = { "Rename: Omit Filename" },
-          ["<C-t>"] = { "Open: New Tab" },
-          ["<C-v>"] = { "Open: Vertical Split" },
-          ["<C-x>"] = { "Open: Horizontal Split" },
-          ["<BS>"] = { "Close Directory" },
-          ["<CR>"] = { "Open" },
-          ["<Tab>"] = { "Open Preview" },
-          [">"] = { "Next Sibling" },
-          ["<"] = { "Previous Sibling" },
-          ["."] = { "Run Command" },
-          ["-"] = { "Up" },
-          a = { "Create" },
-          bd = { "Delete Bookmarked" },
-          bmv = { "Move Bookmarked" },
-          B = { "Toggle No Buffer" },
-          c = { "Copy" },
-          C = { "Toggle Git Clean" },
-          d = { "Delete" },
-          D = { "Trash" },
-          E = { "Expand All" },
-          e = { "Rename: Basename" },
-          F = { "Clean Filter" },
-          f = { "Filter" },
-          ["g?"] = { "Help" },
-          gy = { "Copy Absolute Path" },
-          H = { "Toggle Dotfiles" },
-          I = { "Toggle Git Ignore" },
-          J = { "Last Sibling" },
-          K = { "First Sibling" },
-          m = { "Toggle Bookmark" },
-          o = { "Open" },
-          O = { "Open: No Window Picker" },
-          p = { "Paste" },
-          P = { "Parent Directory" },
-          q = { "Close" },
-          r = { "Rename" },
-          R = { "Refresh" },
-          s = { "Run System" },
-          S = { "Search" },
-          U = { "Toggle Hidden" },
-          W = { "Collapse" },
-          x = { "Cut" },
-          y = { "Copy Name" },
-          Y = { "Copy Relative Path" },
-        }, { buffer = ev.buf })
-      end,
-    })
-  end,
+		wk.add(general_mappings)
+	end,
 }

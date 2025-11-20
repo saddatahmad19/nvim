@@ -1,0 +1,16 @@
+# Error logs
+*.txt
+errors.txt
+
+# Neovim data directories
+plugin/
+pack/
+
+# Session files
+Session.vim
+*.swp
+*.swo
+*~
+
+# Lazy lock (optional - uncomment if you want to ignore it)
+# lazy-lock.json

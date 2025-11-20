@@ -77,13 +77,15 @@ return {
       }
     }
 
-    -- Bubbles config
-    local bubbles_config = {
+    -- Main configuration
+    local config = {
       options = {
-        theme = 'auto',
-        component_separators = '|',
+        theme = custom_theme,
+        component_separators = { left = '|', right = '|' },
         section_separators = { left = '', right = '' },
         globalstatus = true,
+        disabled_filetypes = { statusline = { 'alpha', 'dashboard' } },
+        always_divide_middle = true,
       },
       sections = {
         lualine_a = {
@@ -101,17 +103,22 @@ return {
         lualine_b = {
           {
             'branch',
-            icon = '',
-            padding = { left = 2, right = 2 },
+            icon = '󰘬',
+            padding = { left = 2, right = 1 },
           },
           {
             'diff',
             symbols = {
-              added = ' ',
-              modified = ' ',
-              removed = ' ',
+              added = '󰐕 ',
+              modified = '󰏫 ',
+              removed = '󰍴 ',
             },
-            padding = { left = 2, right = 1 },
+            padding = { left = 1, right = 1 },
+            diff_color = {
+              added = { fg = colors.green },
+              modified = { fg = colors.orange },
+              removed = { fg = colors.red },
+            },
           },
         },
         lualine_c = {
@@ -130,24 +137,32 @@ return {
             lazy_status.updates,
             cond = lazy_status.has_updates,
             color = { fg = colors.orange },
+            icon = '󰓻',
           },
           {
             'diagnostics',
             symbols = {
-              error = ' ',
-              warn = ' ',
-              info = ' ',
-              hint = ' ',
+              error = '󰅚 ',
+              warn = '󰀪 ',
+              info = '󰋽 ',
+              hint = '󰌶 ',
             },
+            diagnostics_color = {
+              error = { fg = colors.red },
+              warn = { fg = colors.yellow },
+              info = { fg = colors.cyan },
+              hint = { fg = colors.violet },
+            },
+            padding = { left = 1, right = 1 },
           },
           { 'filetype', icon_only = true, padding = { left = 1, right = 1 } },
           { 'encoding', padding = { left = 1, right = 1 } },
           {
             'fileformat',
             symbols = {
-              unix = '󰣇', -- e712
-              dos = '󰨡',  -- e20f
-              mac = '',  -- e711
+              unix = '󰣇',
+              dos = '󰨡',
+              mac = '󰀶',
             },
             padding = { left = 1, right = 2 },
           },
@@ -167,9 +182,8 @@ return {
         lualine_y = {},
         lualine_z = {},
       },
-      extensions = { 'nvim-tree' },
     }
 
-    lualine.setup(bubbles_config)
+    lualine.setup(config)
   end,
 }

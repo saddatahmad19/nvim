@@ -6,6 +6,7 @@ return {
 		{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 		"nvim-tree/nvim-web-devicons",
 		"folke/todo-comments.nvim",
+		"folke/trouble.nvim",
 	},
 	config = function()
 		local telescope = require("telescope")
@@ -14,7 +15,6 @@ return {
 		local builtin = require("telescope.builtin")
 
 		local trouble = require("trouble")
-		local trouble_telescope = require("trouble.providers.telescope")
 
 		-- or create your custom action
 		local custom_actions = transform_mod({
@@ -35,13 +35,26 @@ return {
 					"%.pyc",
 					"%.pyo",
 					"__pycache__",
+					"dist",
+					"build",
+					".next",
+					".nuxt",
+					".cache",
+					"%.log",
+					"%.tmp",
+					"%.swp",
+					"%.swo",
+					".DS_Store",
+					"coverage",
+					".idea",
+					".vscode",
 				},
 				mappings = {
 					i = {
 						["<C-k>"] = actions.move_selection_previous,
 						["<C-j>"] = actions.move_selection_next,
 						["<C-q>"] = actions.send_selected_to_qflist + custom_actions.open_trouble_qflist,
-						["<C-t>"] = trouble_telescope.smart_open_with_trouble,
+						["<C-t>"] = require("trouble.sources.telescope").open,
 						["<C-u>"] = false, -- Clear prompt
 						["<C-d>"] = false,
 						["<Esc>"] = actions.close, -- Close with single Esc
@@ -50,7 +63,7 @@ return {
 				-- Improve preview performance
 				preview = {
 					treesitter = true,
-					filesize_limit = 0.1, -- MB
+					filesize_limit = 0.5, -- MB (increased from 0.1 for better preview)
 					timeout = 250, -- ms
 				},
 				-- Better sorting
