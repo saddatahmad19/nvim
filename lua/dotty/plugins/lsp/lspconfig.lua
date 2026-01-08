@@ -1,5 +1,8 @@
 return {
 	"neovim/nvim-lspconfig",
+	-- Pin to version that supports Neovim 0.10 (temporary workaround)
+	-- TODO: Upgrade to Neovim 0.11+ and remove this pin
+	version = "^0.2.0", -- Use a version before v3.0.0 that supports 0.10
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
 		"hrsh7th/cmp-nvim-lsp",
