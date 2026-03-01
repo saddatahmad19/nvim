@@ -5,11 +5,12 @@ return {
   dependencies = {
     "hrsh7th/cmp-buffer", -- source for text in buffer
     "hrsh7th/cmp-path", -- source for file system paths
+    "hrsh7th/cmp-nvim-lsp-signature-help",
+    "David-Kunz/cmp-npm",
+    "roobert/tailwindcss-colorizer-cmp.nvim",
     {
       "L3MON4D3/LuaSnip",
-      -- follow latest release.
-      version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-      -- install jsregexp (optional!), conditionally.
+      version = "v2.*",
       build = require("dotty.core.os").is_windows() and nil or "make install_jsregexp",
     },
     "saadparwaiz1/cmp_luasnip", -- for autocompletion
@@ -24,6 +25,18 @@ return {
     local lspkind = require("lspkind")
 
     local icons = require("dotty.core.icons")
+
+    -- avoid lingering snippet state (NvChad fix)
+    vim.api.nvim_create_autocmd("InsertLeave", {
+      callback = function()
+        if
+          require("luasnip").session.current_nodes[vim.api.nvim_get_current_buf()]
+          and not require("luasnip").session.jump_active
+        then
+          require("luasnip").unlink_current()
+        end
+      end,
+    })
 
     -- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
     require("luasnip.loaders.from_vscode").lazy_load()
@@ -50,8 +63,11 @@ return {
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
         { name = "luasnip" }, -- snippets
+        { name = "nvim_lsp_signature_help" },
         { name = "buffer" }, -- text within current buffer
         { name = "path" }, -- file system paths
+        { name = "npm", keyword_length = 4 },
+        { name = "tailwindcss" },
       }),
 
       -- configure lspkind for vs-code like pictograms in completion menu

@@ -7,7 +7,35 @@ local keymap = vim.keymap -- Alias for easier keybinding
 -- 🚀 Better File Navigation 🚀 --
 keymap.set("n", "<leader>e", ":Ex<CR>", { desc = "Toggle File Explorer" })
 keymap.set("n", "<leader>pv", ":Ex<CR>", { desc = "File Explorer (Netrw Fallback)" })
-keymap.set("n", "<leader>ps", ":w!<CR>", { desc = "Save File" })
+keymap.set("n", "<leader>ps", function()
+  -- Check if conform is available
+  local ok, conform = pcall(require, "conform")
+  if not ok then
+    vim.notify("Conform.nvim not loaded. Saving without formatting.", vim.log.levels.WARN)
+    vim.cmd("w!")
+    return
+  end
+
+  -- Get current buffer
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  -- Format the file
+  local format_ok, format_err = pcall(function()
+    conform.format({
+      bufnr = bufnr,
+      lsp_fallback = true,
+      async = false,
+      timeout_ms = 2000,
+    })
+  end)
+
+  if not format_ok then
+    vim.notify("Formatting failed: " .. tostring(format_err), vim.log.levels.WARN)
+  end
+
+  -- Save the file
+  vim.cmd("w!")
+end, { desc = "Format and Save File" })
 keymap.set("n", "<leader>w", ":w!<CR>", { desc = "Save File" })
 keymap.set("n", "<leader>q", ":q!<CR>", { desc = "Close File" })
 keymap.set("n", "<leader>x", ":x!<CR>", { desc = "Save and Exit" })

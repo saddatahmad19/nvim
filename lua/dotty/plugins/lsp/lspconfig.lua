@@ -86,88 +86,157 @@ return {
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 		end
 
-		-- Configure LSP servers manually
-		-- This approach works regardless of setup_handlers availability
-		
-		-- Helper function to safely setup a server
-		local function setup_if_available(server_name, config)
-			if lspconfig[server_name] then
-				lspconfig[server_name].setup(vim.tbl_deep_extend("force", {
-					capabilities = capabilities,
-				}, config or {}))
-			end
+		local function has_file(patterns)
+			local match = vim.fs.find(patterns, { upward = true, stop = util.path.sep })
+			return match[1] ~= nil
 		end
 
-		-- Configure specific servers with custom settings
+		local function disable_formatting(client)
+			client.server_capabilities.documentFormattingProvider = false
+			client.server_capabilities.documentRangeFormattingProvider = false
+		end
+
+		local configured_servers = {}
+
+		local function setup(server_name, config)
+			configured_servers[server_name] = true
+			lspconfig[server_name].setup(vim.tbl_deep_extend("force", {
+				capabilities = capabilities,
+			}, config or {}))
+		end
+
 		-- Lua Language Server
-		setup_if_available("lua_ls", {
-			settings = {
-				Lua = {
-					diagnostics = {
-						globals = { "vim" },
-					},
-					completion = {
-						callSnippet = "Replace",
+		if lspconfig.lua_ls then
+			setup("lua_ls", {
+				settings = {
+					Lua = {
+						diagnostics = { globals = { "vim" } },
+						completion = { callSnippet = "Replace" },
 					},
 				},
-			},
-		})
+			})
+		end
 
-		-- Svelte Language Server
-		setup_if_available("svelte", {
-			on_attach = function(client, bufnr)
-				vim.api.nvim_create_autocmd("BufWritePost", {
-					pattern = { "*.js", "*.ts" },
-					callback = function(ctx)
-						client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
-					end,
-				})
-			end,
-		})
+		-- JavaScript/TypeScript (Next.js) via vtsls
+		if lspconfig.vtsls then
+			setup("vtsls", {
+				root_dir = util.root_pattern(
+					"next.config.js",
+					"next.config.ts",
+					"package.json",
+					"tsconfig.json",
+					"jsconfig.json"
+				),
+				on_attach = function(client)
+					disable_formatting(client)
+				end,
+				settings = {
+					vtsls = {
+						autoUseWorkspaceTsdk = true,
+						experimental = { completion = { enableServerSideSuggestions = true } },
+					},
+					typescript = {
+						format = { enable = false },
+						suggest = { completeFunctionCalls = true },
+					},
+					javascript = {
+						format = { enable = false },
+						suggest = { completeFunctionCalls = true },
+					},
+				},
+			})
+		end
 
-		-- GraphQL Language Server
-		setup_if_available("graphql", {
-			filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-		})
+		-- Tailwind CSS
+		if lspconfig.tailwindcss then
+			setup("tailwindcss", {
+				root_dir = util.root_pattern(
+					"tailwind.config.js",
+					"tailwind.config.ts",
+					"postcss.config.js",
+					"postcss.config.ts",
+					"package.json"
+				),
+				filetypes = {
+					"html",
+					"css",
+					"scss",
+					"sass",
+					"javascript",
+					"javascriptreact",
+					"typescript",
+					"typescriptreact",
+					"svelte",
+				},
+				settings = {
+					tailwindCSS = {
+						experimental = {
+							classRegex = {
+								"clsx%(([^)]*)%)",
+								'cn%(([^)]*)%)',
+								'cva%(([^)]*)%)',
+								{ "tw`([^`]*)`", "tw%(%s*['\"]([^'\"]*)['\"]%s*%)" },
+							},
+						},
+					},
+				},
+			})
+		end
 
-		-- Emmet Language Server
-		setup_if_available("emmet_ls", {
-			filetypes = {
-				"html",
-				"typescriptreact",
-				"javascriptreact",
-				"css",
-				"sass",
-				"scss",
-				"less",
-				"svelte",
-			},
-		})
+		-- Emmet
+		if lspconfig.emmet_ls then
+			setup("emmet_ls", {
+				filetypes = {
+					"html",
+					"css",
+					"scss",
+					"sass",
+					"less",
+					"javascriptreact",
+					"typescriptreact",
+					"svelte",
+				},
+			})
+		end
 
-		-- Try to use mason-lspconfig's setup_handlers if available (for auto-configuring other servers)
-		-- Otherwise, servers will need to be configured manually as needed
+		-- GraphQL (only when a config exists)
+		if lspconfig.graphql and has_file({ ".graphqlrc", ".graphqlrc.*", "graphql.config.*" }) then
+			setup("graphql", {
+				filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
+			})
+		end
+
+		-- Svelte
+		if lspconfig.svelte then
+			setup("svelte", {
+				on_attach = function(client)
+					vim.api.nvim_create_autocmd("BufWritePost", {
+						pattern = { "*.js", "*.ts" },
+						callback = function(ctx)
+							client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
+						end,
+					})
+				end,
+			})
+		end
+
+		-- Fallback handler for any other installed server
 		vim.schedule(function()
 			local mason_lspconfig_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
-			if mason_lspconfig_ok and mason_lspconfig and mason_lspconfig.setup_handlers then
-				-- Use setup_handlers for auto-configuring other installed servers
-				mason_lspconfig.setup_handlers({
-					-- Default handler for any installed server
-					function(server_name)
-						-- Skip servers we've already configured
-						local configured_servers = {
-							lua_ls = true,
-							svelte = true,
-							graphql = true,
-							emmet_ls = true,
-						}
-						if not configured_servers[server_name] and lspconfig[server_name] then
-							lspconfig[server_name].setup({
-								capabilities = capabilities,
-							})
-						end
-					end,
-				})
+			if not mason_lspconfig_ok or not mason_lspconfig or not mason_lspconfig.setup_handlers then
+				return
 			end
+
+			mason_lspconfig.setup_handlers({
+				function(server_name)
+					if configured_servers[server_name] or not lspconfig[server_name] then
+						return
+					end
+					lspconfig[server_name].setup({
+						capabilities = capabilities,
+					})
+				end,
+			})
 		end)
 	end,
 }

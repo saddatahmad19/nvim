@@ -4,16 +4,42 @@ return {
   config = function()
     local lint = require("lint")
 
-    -- Helper function to check if linter is available
     local function has_linter(name)
       local mason_bin = vim.fn.stdpath("data") .. "/mason/bin/" .. name
       return vim.fn.filereadable(mason_bin) == 1 or vim.fn.executable(name) == 1
     end
 
-    -- Build linters list conditionally
+    local function has_eslint_config(bufnr)
+      local file = vim.api.nvim_buf_get_name(bufnr)
+      local root = vim.fs.root(file, {
+        ".eslintrc",
+        ".eslintrc.js",
+        ".eslintrc.cjs",
+        ".eslintrc.mjs",
+        ".eslintrc.json",
+        ".eslintrc.yaml",
+        ".eslintrc.yml",
+        "eslint.config.js",
+        "eslint.config.mjs",
+        "eslint.config.cjs",
+      })
+      if root then
+        return true
+      end
+
+      local pkg = vim.fs.find("package.json", { upward = true, path = file })[1]
+      if pkg then
+        local ok, decoded = pcall(vim.fn.json_decode, table.concat(vim.fn.readfile(pkg), "\n"))
+        if ok and decoded and decoded.eslintConfig then
+          return true
+        end
+      end
+
+      return false
+    end
+
     local linters_by_ft = {}
 
-    -- Add eslint_d if available
     if has_linter("eslint_d") then
       linters_by_ft.javascript = { "eslint_d" }
       linters_by_ft.typescript = { "eslint_d" }
@@ -22,7 +48,6 @@ return {
       linters_by_ft.svelte = { "eslint_d" }
     end
 
-    -- Add Python linters if available
     if has_linter("pylint") then
       linters_by_ft.python = { "pylint" }
     end
@@ -33,7 +58,12 @@ return {
 
     vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
       group = lint_augroup,
-      callback = function()
+      callback = function(args)
+        local ft = vim.bo[args.buf].filetype
+        local is_js_ft = ft == "javascript" or ft == "typescript" or ft == "javascriptreact" or ft == "typescriptreact" or ft == "svelte"
+        if is_js_ft and not has_eslint_config(args.buf) then
+          return
+        end
         lint.try_lint()
       end,
     })
