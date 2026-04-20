@@ -20,6 +20,10 @@ M.git = {
   branch = " ",
 }
 
+M.misc = {
+  lazy = "󰒲 ",
+}
+
 M.kinds = {
   Array = " ",
   Boolean = "󰨙 ",

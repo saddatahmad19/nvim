@@ -81,8 +81,8 @@ return {
     local config = {
       options = {
         theme = custom_theme,
-        component_separators = { left = '|', right = '|' },
-        section_separators = { left = '', right = '' },
+        component_separators = '',
+        section_separators = { left = '', right = '' },
         globalstatus = true,
         disabled_filetypes = { statusline = { 'alpha', 'dashboard' } },
         always_divide_middle = true,
@@ -93,6 +93,7 @@ return {
             function()
               return mode_icons[vim.fn.mode()]
             end,
+            separator = { left = '' },
             padding = { left = 1, right = 1 },
           },
           {
@@ -171,7 +172,7 @@ return {
           { 'progress', padding = { left = 1, right = 1 } },
         },
         lualine_z = {
-          { 'location', padding = { left = 1, right = 1 } },
+          { 'location', separator = { right = '' }, padding = { left = 1, right = 1 } },
         },
       },
       inactive_sections = {
